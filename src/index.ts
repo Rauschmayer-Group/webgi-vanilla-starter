@@ -24,7 +24,6 @@ import {
     // Color, // Import THREE.js internals
     // Texture, // Import THREE.js internals
 } from "webgi";
-import "./styles.css";
 
 async function setupViewer(){
 
@@ -61,7 +60,7 @@ async function setupViewer(){
     await viewer.addPlugin(CanvasSnipperPlugin)
 
     // Import and add a GLB file.
-    await viewer.load("./classic-watch.glb")
+    await viewer.load("./assets/classic-watch.glb")
 
     // Load an environment map if not set in the glb file
     // await viewer.setEnvironmentMap("./assets/environment.hdr");

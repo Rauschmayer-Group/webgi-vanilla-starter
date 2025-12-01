@@ -1,3 +1,23 @@
+# Custom changes
+
+## Building
+
+### Why is "npm run build" modified?
+
+The reason is, we need a special kind of result.
+A UMD JS file: diamond_shader.umd.js
+
+So we use vite.config.prod.js
+
+### Why do we have a dev.ts?
+
+We need a globally accessible CrystalCave object.
+
+### Why do we have a fix_script_tag.js?
+
+It's a way to add the styles.css
+and we change the script src to be the UMD module.
+
 # WebGi starter project
 A template for a vanilla(no ui-framework) project with webgi engine in typescript using parcel bundler.
 
