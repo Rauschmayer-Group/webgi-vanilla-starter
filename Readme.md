@@ -18,6 +18,22 @@ We need a globally accessible CrystalCave object.
 It's a way to add the styles.css
 and we change the script src to be the UMD module.
 
+### Does npm run dev work ?
+
+Not sure... I don't use it.
+Maybe go to: http://localhost:5173/index.html
+use npm run s instead.
+
+
+### Needed functions:
+
+window.CrystalCave.world.setData(modelData)
+window.CrystalCave.world.setBackgroundColor(customSecondary)
+window.CrystalCave.world.setColor(1, 1, 1, 1, 2.6, 0.5, 0)
+window.CrystalCave.world.setCameraDistance(distance)
+window.CrystalCave.world.resetCamera()
+
+
 # WebGi starter project
 A template for a vanilla(no ui-framework) project with webgi engine in typescript using parcel bundler.
 

@@ -1,75 +1,54 @@
 import {
     ViewerApp,
     AssetManagerPlugin,
-    GBufferPlugin,
-    timeout,
-    ProgressivePlugin,
-    TonemapPlugin,
-    SSRPlugin,
-    SSAOPlugin,
-    DiamondPlugin,
-    FrameFadePlugin,
-    GLTFAnimationPlugin,
-    GroundPlugin,
-    BloomPlugin,
-    TemporalAAPlugin,
-    AnisotropyPlugin,
-    GammaCorrectionPlugin,
-
     addBasePlugins,
-    ITexture, TweakpaneUiPlugin, AssetManagerBasicPopupPlugin, CanvasSnipperPlugin,
-
-    IViewerPlugin, FileTransferPlugin,
-
-    // Color, // Import THREE.js internals
-    // Texture, // Import THREE.js internals
+    CanvasSnipperPlugin,
+    FileTransferPlugin,
 } from "webgi";
 
-async function setupViewer(){
+class World {
+    assetRoot: string;
+    viewer: ViewerApp | undefined;
 
-    // Initialize the viewer
-    const viewer = new ViewerApp({
-        canvas: document.getElementById('webgi-canvas') as HTMLCanvasElement,
-    })
+    constructor() {
+        this.assetRoot = "./assets/";
+    }
 
-    viewer.renderer.renderScale = Math.min(window.devicePixelRatio, 2)
+    async initialize(json?: { assetRoot?: string }) {
+        if (json?.assetRoot) {
+            this.assetRoot = json.assetRoot;
+        }
+        if (!this.assetRoot.endsWith('/')) {
+            this.assetRoot += '/';
+        }
 
-    // Add plugins individually.
-    // await viewer.addPlugin(GBufferPlugin)
-    // await viewer.addPlugin(new ProgressivePlugin(32))
-    // await viewer.addPlugin(new TonemapPlugin(!viewer.useRgbm))
-    // await viewer.addPlugin(GammaCorrectionPlugin)
-    // await viewer.addPlugin(SSRPlugin)
-    // await viewer.addPlugin(SSAOPlugin)
-    // await viewer.addPlugin(DiamondPlugin)
-    // await viewer.addPlugin(FrameFadePlugin)
-    // await viewer.addPlugin(GLTFAnimationPlugin)
-    // await viewer.addPlugin(GroundPlugin)
-    // await viewer.addPlugin(BloomPlugin)
-    // await viewer.addPlugin(TemporalAAPlugin)
-    // await viewer.addPlugin(AnisotropyPlugin)
-    // and many more...
+        const canvas = document.getElementById('webgi-canvas') as HTMLCanvasElement;
+        const viewer = this.viewer = new ViewerApp({ canvas });
 
-    // or use this to add all main ones at once.
-    await addBasePlugins(viewer) // check the source: https://codepen.io/repalash/pen/JjLxGmy for the list of plugins added.
+        viewer.renderer.displayCanvasScaling = Math.max(2, window.devicePixelRatio);
 
-    // Required for downloading files from the UI
-    await viewer.addPlugin(FileTransferPlugin)
+        await viewer.addPlugin(AssetManagerPlugin);
+        await viewer.addPlugin(CanvasSnipperPlugin);
+        await addBasePlugins(viewer);
+        await viewer.addPlugin(FileTransferPlugin);
 
-    // Add more plugins not available in base, like CanvasSnipperPlugin which has helpers to download an image of the canvas.
-    await viewer.addPlugin(CanvasSnipperPlugin)
+        viewer.renderer.refreshPipeline();
 
-    // Import and add a GLB file.
-    await viewer.load("./assets/classic-watch.glb")
+        await viewer.load(this.assetRoot + "classic-watch.glb");
+    }
 
-    // Load an environment map if not set in the glb file
-    // await viewer.setEnvironmentMap("./assets/environment.hdr");
+    setBackgroundColor(val: string) {
+        this.viewer!.scene.setBackgroundColor(val);
+    }
 
-    // Add some UI for tweak and testing.
-    const uiPlugin = await viewer.addPlugin(TweakpaneUiPlugin)
-    // Add plugins to the UI to see their settings.
-    uiPlugin.setupPlugins<IViewerPlugin>(TonemapPlugin, CanvasSnipperPlugin)
+    setCameraDistance(d: number) {
+        this.viewer!.scene.activeCamera.position.normalize().multiplyScalar(d);
+        this.viewer!.scene.activeCamera.positionUpdated();
+    }
 
+    resetCamera() {
+        (this.viewer!.scene.activeCamera.controls as any).reset();
+    }
 }
 
-setupViewer()
+export const world = new World();
